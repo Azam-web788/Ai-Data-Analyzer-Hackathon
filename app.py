@@ -807,10 +807,17 @@ else:
                     """, unsafe_allow_html=True)
                 else:
                     st.warning("""
-                    ⚠️ No API key configured. To enable AI insights:
-                    1. Create a `.env` file in the project root
-                    2. Add: `API_KEY=your_groq_api_key`
-                    3. Get a free key at: https://console.groq.com
+                    ⚠️ **No API key configured.** To enable AI insights:
+
+                    **Local dev:**
+                    1. Copy `.env.example` to `.env`
+                    2. Add your Groq API key
+
+                    **Streamlit Cloud:**
+                    1. Go to **App Settings > Secrets**
+                    2. Add: `GROQ_API_KEY = \"your_groq_api_key\"`
+
+                    Get a free key at: https://console.groq.com
                     """)
         
         with col2:

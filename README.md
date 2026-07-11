@@ -100,6 +100,44 @@ streamlit run app.py
 - python-dotenv - Environment management
 - Groq/OpenAI/Gemini API - AI insights
 
+## Deployment (Streamlit Cloud)
+
+Deploy this app on [Streamlit Cloud](https://streamlit.io/cloud) for free:
+
+### 1. Push to GitHub
+
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/your-username/your-repo.git
+git push -u origin main
+```
+
+### 2. Deploy on Streamlit Cloud
+
+1. Go to [share.streamlit.io](https://share.streamlit.io)
+2. Sign in with GitHub
+3. Click **"New app"** → select your repository
+4. Set **Main file path** to `app.py`
+5. Click **"Deploy!"**
+
+### 3. Set Up API Key (Secrets)
+
+After deployment:
+1. Go to your app's dashboard on Streamlit Cloud
+2. Click **"Settings"** → **"Secrets"**
+3. Add the following:
+
+```toml
+GROQ_API_KEY = "your_groq_api_key_here"
+```
+
+4. Get a free key at: [console.groq.com](https://console.groq.com)
+5. Your app will automatically restart with AI insights enabled!
+
+> **Note:** The `.streamlit/secrets.toml` file in this repo is a **template only**. It is not read by Streamlit Cloud — you must paste its contents into the Secrets section of your app dashboard.
+
 ## Future Improvements
 
 - Support for Excel, JSON, and other file formats
@@ -107,7 +145,6 @@ streamlit run app.py
 - Interactive visualizations
 - More advanced question understanding
 - Export analysis as PDF report
-- Web interface
 
 ## License
 
