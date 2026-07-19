@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import os, sys, tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from dataset_loader import load_csv
+from dataset_loader import load_csv, load_excel
 from analysis import run_full_analysis
 from utils import find_answer
 from visualization import make_chart
@@ -331,7 +331,7 @@ with st.sidebar:
     
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("📁 Upload CSV", width='stretch', 
+        if st.button("📁 Upload CSV/Excel", width='stretch', 
                      type="primary" if not st.session_state.use_sample else "secondary"):
             st.session_state.use_sample = False
             st.session_state.data = None
@@ -344,13 +344,21 @@ with st.sidebar:
             st.rerun()
     
     if not st.session_state.use_sample:
-        uploaded = st.file_uploader("Choose a CSV file", type=["csv"], label_visibility="collapsed")
+        uploaded = st.file_uploader("Choose a CSV or Excel file", type=["csv", "xlsx", "xls"], label_visibility="collapsed")
         # Only process file if data hasn't been loaded yet (guard against re-processing on rerun)
         if uploaded is not None and st.session_state.data is None:
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".csv") as tmp:
+            # Detect file type from extension
+            fname = uploaded.name.lower()
+            if fname.endswith('.csv'):
+                suffix = '.csv'
+                loader = load_csv
+            else:
+                suffix = '.xlsx' if fname.endswith('.xlsx') else '.xls'
+                loader = load_excel
+            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
                 tmp.write(uploaded.getvalue())
                 tmp_path = tmp.name
-            data = load_csv(tmp_path)
+            data = loader(tmp_path)
             os.unlink(tmp_path)
             if data is not None:
                 st.session_state.data = data
@@ -426,7 +434,7 @@ st.markdown("""
 <div style="text-align: center; padding: 40px 0 20px;">
     <h1 style="font-size: 2.8rem; margin: 0;">Data Analysis Assistant</h1>
     <p style="color: rgba(255,255,255,0.5); font-size: 1.1rem; margin: 8px 0 0;">
-        Upload any CSV and unlock insights instantly ✨
+        Upload any CSV or Excel and unlock insights instantly ✨
     </p>
 </div>
 """, unsafe_allow_html=True)
@@ -438,7 +446,7 @@ if st.session_state.data is None:
         <div style="font-size: 4rem; margin-bottom: 16px;">📂</div>
         <h2 style="color: white; margin: 0 0 8px;">Ready to analyze your data?</h2>
         <p style="color: rgba(255,255,255,0.5); max-width: 500px; margin: 0 auto 24px;">
-            Upload a CSV file from the sidebar or try our sample dataset to see 
+            Upload a CSV or Excel file from the sidebar or try our sample dataset to see 
             the power of data analysis.
         </p>
         <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">

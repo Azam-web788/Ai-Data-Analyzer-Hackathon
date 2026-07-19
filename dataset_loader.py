@@ -1,4 +1,4 @@
-"""Load CSV files safely with encoding detection."""
+"""Load CSV / Excel files safely with encoding detection."""
 import pandas as pd
 import os
 
@@ -21,6 +21,21 @@ def load_csv(path):
             return None
     print('ERROR: Could not decode file')
     return None
+
+def load_excel(path):
+    """Read Excel (.xlsx / .xls) from path, return DataFrame or None on error."""
+    if not os.path.exists(path):
+        print(f'ERROR: File not found: {path}')
+        return None
+    try:
+        data = pd.read_excel(path)
+        if data.empty:
+            print('ERROR: Empty Excel file')
+            return None
+        return data
+    except Exception as e:
+        print(f'ERROR: {e}')
+        return None
 
 def show_info(data):
     """Print dataset summary."""
