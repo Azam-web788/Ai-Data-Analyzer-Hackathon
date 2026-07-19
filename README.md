@@ -10,13 +10,14 @@ An intelligent Python-powered application that loads any CSV dataset, performs a
 - **Smart Visualizations** - Automatically choose and create the best chart type
 - **AI Insights** - Get concise, meaningful observations from Groq/OpenAI/Gemini
 - **Error Handling** - Graceful handling of missing files, API failures, and more
+- **Streamlit UI** - Beautiful dark-themed web interface with tabs, filters & charts
 
 ## Folder Structure
 
 ```
 project/
 |
-+-- main.py              # Main entry point
++-- app.py               # Main entry point (Streamlit app)
 +-- config.py            # Configuration (API keys, settings)
 +-- dataset_loader.py    # CSV loading and validation
 +-- analysis.py          # Data analysis and statistics
@@ -33,8 +34,6 @@ project/
 +-- charts/              # Saved visualizations
 |   +-- output_chart.png
 |
-+-- screenshots/         # Screenshots for documentation
-|
 +-- docs/                # Additional documentation
     +-- project_flow.md
 ```
@@ -44,8 +43,8 @@ project/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/ai-data-analysis-assistant.git
-cd ai-data-analysis-assistant
+git clone https://github.com/Azam-web788/Ai-Data-Analyzer-Hackathon.git
+cd Ai-Data-Analyzer-Hackathon
 ```
 
 ### 2. Create a virtual environment (recommended)
@@ -69,6 +68,8 @@ cp .env.example .env
 ```
 
 Get a free API key from: [Groq Console](https://console.groq.com)
+
+> 💡 **Already have a key?** The app checks `GROQ_API_KEY`, `API_KEY`, or `OPENAI_API_KEY` (in that order) for maximum compatibility.
 
 ## Usage
 
@@ -94,11 +95,12 @@ streamlit run app.py
 ## Technologies Used
 
 - Python 3.8+
-- Pandas - Data manipulation
-- NumPy - Numerical computations
-- Matplotlib - Data visualization
-- python-dotenv - Environment management
-- Groq/OpenAI/Gemini API - AI insights
+- **Pandas** - Data manipulation
+- **NumPy** - Numerical computations
+- **Matplotlib** - Data visualization
+- **Streamlit** - Interactive web UI framework
+- **python-dotenv** - Environment management
+- **Groq / OpenAI / Gemini API** - AI-powered insights
 
 ## Deployment (Streamlit Cloud)
 
@@ -107,10 +109,9 @@ Deploy this app on [Streamlit Cloud](https://streamlit.io/cloud) for free:
 ### 1. Push to GitHub
 
 ```bash
-git init
 git add .
 git commit -m "Initial commit"
-git remote add origin https://github.com/your-username/your-repo.git
+git remote add origin https://github.com/Azam-web788/Ai-Data-Analyzer-Hackathon.git
 git push -u origin main
 ```
 

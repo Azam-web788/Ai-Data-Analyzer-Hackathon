@@ -10,7 +10,9 @@ This document explains the flow of data and control through the application.
 START
   |
   v
-[1] main.py - Welcome Banner
+[1] app.py - Streamlit Entry Point
+  |  - Renders dark-themed web UI
+  |  - Handles sidebar, tabs, file upload
   |
   v
 [2] dataset_loader.py - Load & Validate CSV
@@ -23,14 +25,13 @@ START
   |  - Detect column types (numeric/categorical/date)
   |  - Compute statistics for each column
   |  - Generate correlation matrix
-  |  - Display results in console
   |
   v
 [4] utils.py - Answer User Questions
   |  - Parse natural language question
   |  - Use Pandas to compute answer
-  |  - Display answer to user
-  |  - Loop until user types 'exit'
+  |  - Display answer in web UI
+  |  - Suggest follow-up questions
   |
   v
 [5] visualization.py - Create Chart
@@ -40,11 +41,11 @@ START
   v
 [6] ai_helper.py - Generate Insights
   |  - Build summary from analysis results
-  |  - Send summary to LLM API
+  |  - Send summary to LLM API (Groq/OpenAI/Gemini)
   |  - Display AI-generated insight
   |
   v
-END - Display Summary
+END - Interactive Dashboard
 ```
 
 ## Module Responsibilities
