@@ -760,3 +760,58 @@ else:
         with col2:
             ask_btn = st.button("🔍 Ask", width='stretch', type="primary")
         
+        # Handle ask button
+        if ask_btn and q:
+            with st.spinner("Thinking..."):
+                answer = find_answer(data, q)
+            st.session_state.question_history.append((q, answer))
+            st.rerun()
+        
+        # ─── Display question history ──────────────────────────────────────
+        if st.session_state.question_history:
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown("""
+            <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px;">
+                <h4 style="color: white; margin: 0 0 16px;">💬 Conversation</h4>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            for i, (question, answer) in enumerate(reversed(st.session_state.question_history)):
+                # Question bubble
+                st.markdown(f"""
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
+                    <div style="background: linear-gradient(135deg, #667eea, #764ba2);
+                                color: white;
+                                padding: 10px 16px;
+                                border-radius: 18px 18px 4px 18px;
+                                max-width: 80%;
+                                font-size: 0.9rem;
+                                word-wrap: break-word;
+                                box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);">
+                        🤔 {question}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Answer bubble
+                st.markdown(f"""
+                <div style="display: flex; justify-content: flex-start; margin-bottom: 20px;">
+                    <div style="background: rgba(255, 255, 255, 0.08);
+                                color: rgba(255,255,255,0.9);
+                                padding: 10px 16px;
+                                border-radius: 18px 18px 18px 4px;
+                                max-width: 80%;
+                                font-size: 0.9rem;
+                                line-height: 1.5;
+                                word-wrap: break-word;
+                                border: 1px solid rgba(255, 255, 255, 0.06);">
+                        {answer}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            # Clear history button
+            if st.button("🗑️ Clear Chat", width='stretch'):
+                st.session_state.question_history = []
+                st.rerun()
+        
