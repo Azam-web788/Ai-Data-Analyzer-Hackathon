@@ -9,3 +9,7 @@ class Settings:
     # Chart output
     CHART_DIR = 'charts'
     CHART_FILE = 'output_chart.png'
+
+    # Dashboard grid
+    DASHBOARD_PREFIX = 'dashboard_'
+    DASHBOARD_COUNT = 4

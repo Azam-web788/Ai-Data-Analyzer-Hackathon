@@ -69,6 +69,14 @@ _KEYWORDS = {
         'sabse bura', 'sabse kharab',
         'निचला', 'सबसे खराब', 'अंतिम',
     ],
+    'chart': [
+        'chart', 'graph', 'plot', 'visualize', 'show me', 'draw',
+        'bar chart', 'pie chart', 'histogram', 'scatter plot',
+        'line chart', 'box plot', 'area chart', 'heatmap', 'violin',
+        'distribution of', 'correlation between',
+        'chart banao', 'graph banao', 'plot banao',
+        'चार्ट', 'ग्राफ', 'प्लॉट', 'दिखाओ',
+    ],
 }
 
 # ─── Column name aliases (English → Urdu/Hindi) ────────────────────────────────────
@@ -436,3 +444,108 @@ def _suggest(data):
         + '\n'.join(tips[:6])
         + "\n\n💡 Or type **'help'** for examples in English, Urdu & Hindi!"
     )
+
+
+def detect_chart_intent(question, data):
+    """Detect if a question is asking for a chart and determine chart params.
+
+    Returns dict with 'type', 'x_col', 'y_col' keys, or None if no chart intent.
+    """
+    q = question.lower().strip()
+
+    # Detect chart type keywords
+    nums = [c for c in data.columns if pd.api.types.is_numeric_dtype(data[c])]
+    cats = [c for c in data.columns if not pd.api.types.is_numeric_dtype(data[c])]
+
+    chart_type = None
+    x_col = None
+    y_col = None
+
+    # Check which chart type is mentioned
+    if any(w in q for w in ['bar', 'bar chart', 'bar graph']):
+        chart_type = 'bar'
+    elif any(w in q for w in ['pie', 'pie chart']):
+        chart_type = 'pie'
+    elif any(w in q for w in ['histogram', 'distribution']):
+        chart_type = 'histogram'
+    elif any(w in q for w in ['scatter', 'scatter plot', 'correlation between']):
+        chart_type = 'scatter'
+    elif any(w in q for w in ['line', 'line chart', 'trend', 'over time']):
+        chart_type = 'line'
+    elif any(w in q for w in ['box', 'box plot']):
+        chart_type = 'box'
+    elif any(w in q for w in ['area', 'area chart']):
+        chart_type = 'area'
+    elif any(w in q for w in ['heatmap', 'correlation heatmap']):
+        chart_type = 'heatmap'
+    elif any(w in q for w in ['violin', 'violin plot']):
+        chart_type = 'violin'
+
+    # If chart type detected, find columns
+    if chart_type:
+        # Find x column (categorical for bar/pie/box/violin, numeric for histogram/scatter/line/area)
+        if chart_type in ('bar', 'pie', 'box', 'violin'):
+            # Try to find a categorical column mentioned first
+            for c in cats:
+                c_lower = c.lower().replace('_', ' ').replace('-', ' ')
+                if c_lower in q:
+                    x_col = c
+                    break
+            if not x_col and cats:
+                x_col = cats[0]
+            # Try to find a numeric column mentioned for y
+            for c in nums:
+                c_lower = c.lower().replace('_', ' ').replace('-', ' ')
+                if c_lower in q:
+                    y_col = c
+                    break
+            if not y_col and nums:
+                y_col = nums[0]
+        elif chart_type == 'histogram':
+            for c in nums:
+                c_lower = c.lower().replace('_', ' ').replace('-', ' ')
+                if c_lower in q:
+                    x_col = c
+                    break
+            if not x_col and nums:
+                x_col = nums[0]
+        else:  # scatter, line, area
+            for c in nums:
+                c_lower = c.lower().replace('_', ' ').replace('-', ' ')
+                if c_lower in q:
+                    if x_col is None:
+                        x_col = c
+                    elif y_col is None:
+                        y_col = c
+            if not x_col and len(nums) >= 1:
+                x_col = nums[0]
+            if not y_col and len(nums) >= 2:
+                y_col = nums[1]
+
+        return {'type': chart_type, 'x_col': x_col, 'y_col': y_col}
+
+    # Generic chart request (no specific type) — auto-pick
+    if any(w in q for w in ['chart', 'graph', 'plot', 'visualize', 'show me', 'draw',
+                             'chart banao', 'graph banao', 'plot banao',
+                             'चार्ट', 'ग्राफ', 'प्लॉट', 'दिखाओ']):
+        # Auto-detect: prefer bar if cats+nums, else scatter, else histogram
+        if cats and nums:
+            chart_type = 'bar'
+            x_col = cats[0]
+            y_col = nums[0]
+        elif len(nums) >= 2:
+            chart_type = 'scatter'
+            x_col = nums[0]
+            y_col = nums[1]
+        elif nums:
+            chart_type = 'histogram'
+            x_col = nums[0]
+        elif cats:
+            chart_type = 'bar'
+            x_col = cats[0]
+        else:
+            return None
+
+        return {'type': chart_type, 'x_col': x_col, 'y_col': y_col}
+
+    return None
