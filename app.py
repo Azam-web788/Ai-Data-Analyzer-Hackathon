@@ -15,12 +15,11 @@ try:
         shutil.rmtree(_cache_dir)
 except PermissionError:
     pass  # Windows may lock files; skip silently
-from ai_helper import get_insight
 import base64
 
 # ─── Page Config ────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="AI Data Analysis Assistant",
+    page_title="Data Analysis Assistant",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -318,7 +317,7 @@ with st.sidebar:
                    -webkit-background-clip: text;
                    -webkit-text-fill-color: transparent;
                    background-clip: text;
-                   margin: 0;">AI Data Analysis</h3>
+                   margin: 0;">Data Analysis</h3>
         <p style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin: 4px 0 0;">
             Upload. Analyze. Discover.
         </p>
@@ -425,7 +424,7 @@ with st.sidebar:
 # Hero section
 st.markdown("""
 <div style="text-align: center; padding: 40px 0 20px;">
-    <h1 style="font-size: 2.8rem; margin: 0;">AI Data Analysis Assistant</h1>
+    <h1 style="font-size: 2.8rem; margin: 0;">Data Analysis Assistant</h1>
     <p style="color: rgba(255,255,255,0.5); font-size: 1.1rem; margin: 8px 0 0;">
         Upload any CSV and unlock insights instantly ✨
     </p>
@@ -440,7 +439,7 @@ if st.session_state.data is None:
         <h2 style="color: white; margin: 0 0 8px;">Ready to analyze your data?</h2>
         <p style="color: rgba(255,255,255,0.5); max-width: 500px; margin: 0 auto 24px;">
             Upload a CSV file from the sidebar or try our sample dataset to see 
-            the power of AI-driven data analysis.
+            the power of data analysis.
         </p>
         <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
             <span style="background: rgba(102,126,234,0.15); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem;">
@@ -450,7 +449,7 @@ if st.session_state.data is None:
                 📈 Smart visualizations
             </span>
             <span style="background: rgba(102,126,234,0.15); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem;">
-                🤖 AI-powered insights
+                📊 Statistical analysis
             </span>
             <span style="background: rgba(102,126,234,0.15); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem;">
                 💬 Natural language queries
@@ -489,10 +488,10 @@ if st.session_state.data is None:
     with col3:
         st.markdown("""
         <div class="glass-card" style="text-align: center;">
-            <div style="font-size: 2.5rem;">🧠</div>
-            <h3 style="color: white; margin: 8px 0;">AI Insights</h3>
+            <div style="font-size: 2.5rem;">📈</div>
+            <h3 style="color: white; margin: 8px 0;">Visual Insights</h3>
             <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin: 0;">
-                Get LLM-powered findings, suggestions & patterns
+                Auto-generated charts and visualizations for quick understanding
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -502,9 +501,8 @@ else:
     data = st.session_state.data
     analysis = st.session_state.analysis
     
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "📊 Dashboard", "📋 Data Explorer", "📈 Visualizations", 
-        "💬 Ask Questions", "🤖 AI Insights"
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "📊 Dashboard", "📋 Data Explorer", "📈 Visualizations", "💬 Ask Questions"
     ])
     
     # ─── TAB 1: Dashboard ──────────────────────────────────────────────────
@@ -762,85 +760,3 @@ else:
         with col2:
             ask_btn = st.button("🔍 Ask", width='stretch', type="primary")
         
-        if ask_btn and q:
-            with st.spinner("Finding answer..."):
-                answer = find_answer(data, q)
-                st.session_state.question_history.append((q, answer))
-        
-        # Show question history
-        if st.session_state.question_history:
-            st.markdown("---")
-            st.markdown("<h4 style='color: white;'>📝 Question History</h4>", unsafe_allow_html=True)
-            for i, (question, answer) in enumerate(reversed(st.session_state.question_history[-10:])):
-                st.markdown(f"""
-                <div style="background: rgba(255,255,255,0.04); border-radius: 10px; padding: 12px 16px; margin-bottom: 8px;
-                            border-left: 3px solid #667eea;">
-                    <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem; font-weight: 500;">❓ {question}</div>
-                    <div style="color: white; font-size: 1rem; margin-top: 4px;">💡 {answer}</div>
-                </div>
-                """, unsafe_allow_html=True)
-    
-    # ─── TAB 5: AI Insights ────────────────────────────────────────────────
-    with tab5:
-        st.markdown("""
-        <div class="glass-card">
-            <h3 style="color: white; margin: 0 0 8px;">🤖 AI-Powered Insights</h3>
-            <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin: 0;">
-                Get intelligent analysis using LLMs (Groq, OpenAI, or Gemini).
-                Set your <strong>API_KEY</strong> in the <code>.env</code> file.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        col1, col2 = st.columns([2, 1])
-        with col1:
-            if st.button("✨ Generate AI Insights", width='stretch', type="primary"):
-                with st.spinner("🤔 AI is analyzing your data..."):
-                    insight = get_insight(analysis, data)
-                if insight:
-                    st.markdown(f"""
-                    <div style="background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(118,75,162,0.15));
-                                border: 1px solid rgba(102,126,234,0.2);
-                                border-radius: 12px; padding: 24px; margin-top: 12px;">
-                        <div style="font-size: 1.1rem; color: white; line-height: 1.6;">{insight}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                else:
-                    st.warning("""
-                    ⚠️ **No API key configured.** To enable AI insights:
-
-                    **Local dev:**
-                    1. Copy `.env.example` to `.env`
-                    2. Add your Groq API key
-
-                    **Streamlit Cloud:**
-                    1. Go to **App Settings > Secrets**
-                    2. Add: `GROQ_API_KEY = \"your_groq_api_key\"`
-
-                    Get a free key at: https://console.groq.com
-                    """)
-        
-        with col2:
-            st.markdown("""
-            <div class="glass-card" style="padding: 16px;">
-                <h4 style="color: white; margin: 0 0 8px; font-size: 0.9rem;">📋 Analysis Summary</h4>
-            """, unsafe_allow_html=True)
-            st.markdown(f"""
-            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">
-                <p><strong style="color:white;">{analysis['rows']:,}</strong> rows</p>
-                <p><strong style="color:white;">{analysis['cols']}</strong> columns</p>
-                <p><strong style="color:white;">{analysis['missing']:,}</strong> missing values</p>
-                <p><strong style="color:white;">{analysis['dupes']:,}</strong> duplicates</p>
-                <p><strong style="color:white;">{len(analysis['nums'])}</strong> numeric columns</p>
-                <p><strong style="color:white;">{len(analysis['cats'])}</strong> categorical columns</p>
-                <p><strong style="color:white;">{len(analysis['dates'])}</strong> date columns</p>
-            </div>
-            """, unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
-
-# ─── Footer ──────────────────────────────────────────────────────────────────
-st.markdown("""
-<div class="footer">
-    AI Data Analysis Assistant &mdash; Built with Streamlit &hearts;
-</div>
-""", unsafe_allow_html=True)
